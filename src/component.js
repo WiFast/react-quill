@@ -127,6 +127,8 @@ var QuillComponent = React.createClass({
 	componentWillUnmount: function() {
 		// NOTE: Don't set the state to null here
 		//       as it would generate a loop.
+
+		this.state.removeEventsCallback();
 	},
 
 	shouldComponentUpdate: function(nextProps, nextState) {

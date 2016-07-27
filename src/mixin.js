@@ -19,24 +19,33 @@ var QuillMixin = {
 		// unprivileged proxy object that does not allow
 		// accidentally modifying editor state.
 		var unprivilegedEditor = this.makeUnprivilegedEditor(editor);
-
-		editor.on('text-change', function(delta, source) {
+		var textChangeHandler = function(delta, source) {
 			if (this.onEditorChange) {
 				this.onEditorChange(
 					editor.root.innerHTML, delta, source,
 					unprivilegedEditor
 				);
 			}
-		}.bind(this));
-
-		editor.on('selection-change', function(range, source) {
+		}.bind(this);
+		var selectionChangeHandler = function(range, source) {
 			if (this.onEditorChangeSelection) {
 				this.onEditorChangeSelection(
 					range, source,
 					unprivilegedEditor
 				);
 			}
-		}.bind(this));
+		}.bind(this);
+
+		editor.on('text-change', textChangeHandler);
+		editor.on('selection-change', selectionChangeHandler);
+
+		this.setState({
+			removeEventsCallback: function() {
+				editor.off('text-change', textChangeHandler);
+				editor.off('selection-change', selectionChangeHandler);
+			}
+		})
+
 	},
 
 	setEditorReadOnly: function(editor, value) {
